@@ -1,0 +1,1155 @@
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterGui = game:GetService("StarterGui")
+local LocalPlayer = Players.LocalPlayer
+local EventTab = Window:CreateTab("Event")
+local EventUpgradesTab = Window:CreateTab("Event Upgrades")
+local MainTab = Window:CreateTab("Main")
+local UpgradesTab = Window:CreateTab("Upgrades")
+
+local Remotes = ReplicatedStorage:FindFirstChild("Remotes")
+
+local ShellsClick
+local SummerTier
+local Upgrades
+local ConvertCash
+local UpgradeTree
+local SummerUpgradeTree
+local ResetLayers
+local SummerDrop
+local Clicks
+local Codes
+local Prestige
+local SummerRuneForge
+local CollectCoconut
+local NoobINFO
+local Classes
+
+if Remotes then
+    local SummerFeatures = Remotes:FindFirstChild("SummerFeatures")
+    local Others = Remotes:FindFirstChild("Others")
+    local Features = Remotes:FindFirstChild("Features")
+
+    if SummerFeatures then
+        ShellsClick = SummerFeatures:FindFirstChild("ShellsClick")
+        SummerTier = SummerFeatures:FindFirstChild("SummerTier")
+        SummerUpgradeTree = SummerFeatures:FindFirstChild("SummerUpgradeTree")
+        SummerDrop = SummerFeatures:FindFirstChild("SummerDrop")
+        SummerRuneForge = SummerFeatures:FindFirstChild("SummerRuneForge")
+    end
+
+    if Others then
+        Upgrades = Others:FindFirstChild("Upgrades")
+        ResetLayers = Others:FindFirstChild("ResetLayers")
+        Codes = Others:FindFirstChild("Codes")
+        NoobINFO = Others:FindFirstChild("NoobINFO")
+    end
+
+    if Features then
+        ConvertCash = Features:FindFirstChild("ConvertCash")
+        UpgradeTree = Features:FindFirstChild("UpgradeTree")
+        Clicks = Features:FindFirstChild("Clicks")
+        Prestige = Features:FindFirstChild("Prestige")
+        Classes = Features:FindFirstChild("Classes")
+    end
+end
+
+CollectCoconut = ReplicatedStorage:FindFirstChild("CollectCoconut")
+
+EventTab:CreateSection("Summer Event")
+
+local autoClickRunning = false
+local autoTierRunning = false
+local autoCoconutRunning = false
+local autoForgeRunning = false
+
+EventTab:CreateToggle({
+    Name = "Auto Click Shell",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoClickRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoClickRunning do
+                    if ShellsClick then
+                        pcall(function()
+                            ShellsClick:FireServer()
+                        end)
+                    end
+
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end
+})
+
+EventTab:CreateToggle({
+    Name = "Auto Tier",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoTierRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoTierRunning do
+                    if SummerTier then
+                        pcall(function()
+                            SummerTier:FireServer()
+                        end)
+                    end
+
+                    task.wait(0.5)
+                end
+            end)
+        end
+    end
+})
+
+EventTab:CreateSection("Summer Upgrade Tree")
+
+local autoSummerUpgradeTreeRunning = false
+
+EventTab:CreateToggle({
+    Name = "Auto Summer Upgrade Tree",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoSummerUpgradeTreeRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoSummerUpgradeTreeRunning do
+                    if SummerUpgradeTree then
+                        for i = 1, 25 do
+                            if not autoSummerUpgradeTreeRunning then
+                                break
+                            end
+
+                            pcall(function()
+                                SummerUpgradeTree:FireServer("Upg" .. i)
+                            end)
+
+                            task.wait(0.3)
+                        end
+                    else
+                        task.wait(1)
+                    end
+                end
+            end)
+        end
+    end
+})
+
+EventTab:CreateSection("Rune Forge")
+
+EventTab:CreateToggle({
+    Name = "Auto Forge",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoForgeRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoForgeRunning do
+                    if SummerRuneForge then
+                        pcall(function()
+                            SummerRuneForge:FireServer()
+                        end)
+                    end
+
+                    task.wait(0.5)
+                end
+            end)
+        end
+    end
+})
+
+EventTab:CreateSection("Auto Sand")
+
+local autoSandRunning = false
+local sandDelay = 5
+
+EventTab:CreateSlider({
+    Name = "Sand Delay",
+    Range = {1, 20},
+    Increment = 1,
+    Suffix = " seconds",
+    CurrentValue = 5,
+    Callback = function(Value)
+        sandDelay = Value
+    end
+})
+
+EventTab:CreateToggle({
+    Name = "Auto Sand",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoSandRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoSandRunning do
+                    if ResetLayers then
+                        pcall(function()
+                            ResetLayers:FireServer("Sand")
+                        end)
+                    end
+
+                    task.wait(sandDelay)
+                end
+            end)
+        end
+    end
+})
+
+EventTab:CreateSection("Auto Fish")
+
+local autoFishRunning = false
+
+EventTab:CreateToggle({
+    Name = "Auto Fish",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoFishRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoFishRunning do
+                    pcall(function()
+                        local PlayerGui = LocalPlayer:FindFirstChild("PlayerGui")
+                        local Screen = PlayerGui and PlayerGui:FindFirstChild("Screen")
+                        local FishingScreen = Screen and Screen:FindFirstChild("FishingScreen")
+                        local Container = FishingScreen and FishingScreen:FindFirstChild("Container")
+                        local FishContainer = Container and Container:FindFirstChild("FishContainer")
+
+                        if FishContainer and SummerDrop then
+                            for _, Fish in ipairs(FishContainer:GetChildren()) do
+                                local FishName = Fish.Name
+
+                                if FishName and FishName ~= "" then
+                                    SummerDrop:FireServer("Collect", FishName)
+                                end
+                            end
+                        end
+                    end)
+
+                    task.wait(0.3)
+                end
+            end)
+        end
+    end
+})
+
+EventTab:CreateSection("Auto Coconuts")
+
+EventTab:CreateToggle({
+    Name = "Auto Coconuts",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoCoconutRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoCoconutRunning do
+                    if CollectCoconut then
+                        for i = 1, 70 do
+                            if not autoCoconutRunning then
+                                break
+                            end
+
+                            pcall(function()
+                                CollectCoconut:FireServer(tostring(i))
+                            end)
+
+                            task.wait(0.05)
+                        end
+                    end
+
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end
+})
+
+EventUpgradesTab:CreateSection("Shell Upgrades")
+
+local shellUpgradeStates = {}
+
+for i = 1, 4 do
+    local index = i
+    shellUpgradeStates[index] = false
+
+    EventUpgradesTab:CreateToggle({
+        Name = "Auto Shell Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            shellUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while shellUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "ShellsUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+                        end
+
+                        task.wait(0.3)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+EventUpgradesTab:CreateSection("Sand Upgrades")
+
+local sandUpgradeStates = {}
+
+for i = 1, 3 do
+    local index = i
+    sandUpgradeStates[index] = false
+
+    EventUpgradesTab:CreateToggle({
+        Name = "Auto Sand Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            sandUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while sandUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "SandUpgrade" .. index
+                                )
+                            end)
+                        end
+
+                        task.wait(0.3)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+EventUpgradesTab:CreateSection("Fish Upgrades")
+
+local fishUpgradeStates = {}
+
+for i = 1, 4 do
+    local index = i
+    fishUpgradeStates[index] = false
+
+    EventUpgradesTab:CreateToggle({
+        Name = "Auto Fish Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            fishUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while fishUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "FishUpgrade" .. index
+                                )
+                            end)
+                        end
+
+                        task.wait(0.3)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+EventUpgradesTab:CreateSection("Coconut Upgrades")
+
+local coconutUpgradeStates = {}
+
+for i = 1, 3 do
+    local index = i
+    coconutUpgradeStates[index] = false
+
+    EventUpgradesTab:CreateToggle({
+        Name = "Auto Coconut Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            coconutUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while coconutUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "CoconutsUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+                        end
+
+                        task.wait(0.3)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+MainTab:CreateSection("Automation")
+
+local autoMiniGameRunning = false
+local autoClicksRunning = false
+local autoSecretCodesRunning = false
+local autoCashRunning = false
+local autoPrestigeRunning = false
+local autoSunResetRunning = false
+local autoClassesRunning = false
+
+MainTab:CreateToggle({
+    Name = "Auto Mini Game",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoMiniGameRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoMiniGameRunning do
+                    pcall(function()
+                        local Character = LocalPlayer.Character
+                        local Root = Character and Character:FindFirstChild("HumanoidRootPart")
+                        local World = workspace:FindFirstChild("World")
+                        local Obby = World and World:FindFirstChild("Obby")
+                        local RewardObby = Obby and Obby:FindFirstChild("RewardObby")
+
+                        if Root and RewardObby then
+                            local OriginalCFrame = Root.CFrame
+                            local ObbyCFrame
+
+                            if RewardObby:IsA("BasePart") then
+                                ObbyCFrame = RewardObby.CFrame
+                            elseif RewardObby:IsA("Model") then
+                                ObbyCFrame = RewardObby:GetPivot()
+                            end
+
+                            if ObbyCFrame then
+                                Root.CFrame = ObbyCFrame + Vector3.new(0, 3, 0)
+                                task.wait(1)
+                                Root.CFrame = OriginalCFrame
+                            end
+                        end
+                    end)
+
+                    task.wait(60)
+                end
+            end)
+        end
+    end
+})
+
+MainTab:CreateToggle({
+    Name = "Auto Clicks",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoClicksRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoClicksRunning do
+                    if Clicks then
+                        pcall(function()
+                            Clicks:FireServer()
+                        end)
+                    end
+
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end
+})
+
+MainTab:CreateToggle({
+    Name = "Auto Secret Codes",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoSecretCodesRunning = Value
+
+        if Value then
+            task.spawn(function()
+                local SecretCodes = StarterGui:FindFirstChild("SecretCodes")
+
+                if SecretCodes and Codes then
+                    for _, CodeObject in ipairs(SecretCodes:GetChildren()) do
+                        if not autoSecretCodesRunning then
+                            break
+                        end
+
+                        local Code = CodeObject.Name
+
+                        if Code and Code ~= "" then
+                            pcall(function()
+                                Codes:FireServer(Code)
+                            end)
+                        end
+
+                        task.wait(0.5)
+                    end
+                end
+
+                autoSecretCodesRunning = false
+            end)
+        end
+    end
+})
+
+MainTab:CreateToggle({
+    Name = "Auto Prestige",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoPrestigeRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoPrestigeRunning do
+                    if Prestige then
+                        pcall(function()
+                            Prestige:FireServer()
+                        end)
+                    end
+
+                    task.wait(0.5)
+                end
+            end)
+        end
+    end
+})
+
+MainTab:CreateToggle({
+    Name = "Auto Convert Cash",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoCashRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoCashRunning do
+                    if ConvertCash then
+                        pcall(function()
+                            ConvertCash:FireServer()
+                        end)
+                    end
+
+                    task.wait(0.3)
+                end
+            end)
+        end
+    end
+})
+
+MainTab:CreateToggle({
+    Name = "Auto Classes",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoClassesRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoClassesRunning do
+                    if Classes then
+                        pcall(function()
+                            Classes:FireServer()
+                        end)
+                    end
+
+                    task.wait(0.5)
+                end
+            end)
+        end
+    end
+})
+
+MainTab:CreateSection("Noob")
+
+local autoNoobRunning = false
+
+MainTab:CreateToggle({
+    Name = "Auto Next",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoNoobRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoNoobRunning do
+                    if NoobINFO then
+                        pcall(function()
+                            NoobINFO:FireServer("Next")
+                        end)
+                    end
+
+                    task.wait(0.5)
+                end
+            end)
+        end
+    end
+})
+
+EventTab:CreateSection("Sun Reset")
+
+local sunResetDelay = 5
+
+EventTab:CreateSlider({
+    Name = "Sun Reset Delay",
+    Range = {5, 30},
+    Increment = 1,
+    Suffix = " seconds",
+    CurrentValue = 5,
+    Callback = function(Value)
+        sunResetDelay = Value
+    end
+})
+
+EventTab:CreateToggle({
+    Name = "Auto Sun Reset",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoSunResetRunning = Value
+
+        if Value then
+            task.spawn(function()
+                while autoSunResetRunning do
+                    if ResetLayers then
+                        pcall(function()
+                            ResetLayers:FireServer("Sun")
+                        end)
+                    end
+
+                    task.wait(sunResetDelay)
+                end
+            end)
+        end
+    end
+})
+
+MainTab:CreateSection("Upgrade Tree")
+
+local autoUpgradeTree1Running = false
+local autoUpgradeTree2Running = false
+
+MainTab:CreateToggle({
+    Name = "Auto Upg Tree 1",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoUpgradeTree1Running = Value
+
+        if Value then
+            task.spawn(function()
+                while autoUpgradeTree1Running do
+                    if UpgradeTree then
+                        for i = 1, 20 do
+                            if not autoUpgradeTree1Running then
+                                break
+                            end
+
+                            pcall(function()
+                                UpgradeTree:FireServer("Upg" .. i)
+                            end)
+
+                            task.wait(0.3)
+                        end
+                    else
+                        task.wait(1)
+                    end
+                end
+            end)
+        end
+    end
+})
+
+MainTab:CreateToggle({
+    Name = "Auto Upg Tree 2",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoUpgradeTree2Running = Value
+
+        if Value then
+            task.spawn(function()
+                while autoUpgradeTree2Running do
+                    if UpgradeTree then
+                        for i = 21, 50 do
+                            if not autoUpgradeTree2Running then
+                                break
+                            end
+
+                            pcall(function()
+                                UpgradeTree:FireServer("Upg" .. i)
+                            end)
+
+                            task.wait(0.3)
+                        end
+                    else
+                        task.wait(1)
+                    end
+                end
+            end)
+        end
+    end
+})
+
+local autoUpgradeTree3Running = false
+
+MainTab:CreateToggle({
+    Name = "Auto Upg Tree 3",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoUpgradeTree3Running = Value
+
+        if Value then
+            task.spawn(function()
+                while autoUpgradeTree3Running do
+                    if UpgradeTree then
+                        for i = 48, 65 do
+                            if not autoUpgradeTree3Running then
+                                break
+                            end
+
+                            pcall(function()
+                                UpgradeTree:FireServer("Upg" .. i)
+                            end)
+
+                            task.wait(0.3)
+                        end
+                    else
+                        task.wait(1)
+                    end
+                end
+            end)
+        end
+    end
+})
+
+local autoUpgradeTree4Running = false
+
+MainTab:CreateToggle({
+    Name = "Auto Upg Tree 4",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoUpgradeTree4Running = Value
+
+        if Value then
+            task.spawn(function()
+                while autoUpgradeTree4Running do
+                    if UpgradeTree then
+                        for i = 66, 90 do
+                            if not autoUpgradeTree4Running then
+                                break
+                            end
+
+                            pcall(function()
+                                UpgradeTree:FireServer("Upg" .. i)
+                            end)
+
+                            task.wait(0.3)
+                        end
+                    else
+                        task.wait(1)
+                    end
+                end
+            end)
+        end
+    end
+})
+
+UpgradesTab:CreateSection("Cash Upgrades")
+
+local cashUpgStates = {}
+
+for i = 1, 3 do
+    local index = i
+    cashUpgStates[index] = false
+
+    UpgradesTab:CreateToggle({
+        Name = "Auto Cash Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            cashUpgStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while cashUpgStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "CashUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+                        end
+
+                        task.wait(0.3)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+UpgradesTab:CreateSection("Rebirth Upgrades")
+
+local rebirthUpgStates = {}
+
+for i = 1, 3 do
+    local index = i
+    rebirthUpgStates[index] = false
+
+    UpgradesTab:CreateToggle({
+        Name = "Auto Rebirth Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            rebirthUpgStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while rebirthUpgStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "RebirthUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+                        end
+
+                        task.wait(0.3)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+UpgradesTab:CreateSection("Click Upgrades")
+
+local clickUpgradeStates = {}
+
+for i = 1, 3 do
+    local index = i
+    clickUpgradeStates[index] = false
+
+    UpgradesTab:CreateToggle({
+        Name = "Auto Click Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            clickUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while clickUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "ClicksUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+                        end
+
+                        task.wait(0.3)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+UpgradesTab:CreateSection("Bronze Upgrades")
+
+local bronzeUpgradeStates = {}
+
+for i = 1, 3 do
+    local index = i
+    bronzeUpgradeStates[index] = false
+
+    UpgradesTab:CreateToggle({
+        Name = "Auto Bronze Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            bronzeUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while bronzeUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "BronzeUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+                        end
+
+                        task.wait(0.3)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+UpgradesTab:CreateSection("Iron Upgrades")
+
+local ironUpgradeStates = {}
+
+for i = 1, 3 do
+    local index = i
+    ironUpgradeStates[index] = false
+
+    UpgradesTab:CreateToggle({
+        Name = "Auto Iron Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            ironUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while ironUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "IronUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+                        end
+
+                        task.wait(0.3)
+                    end
+                end)
+            end
+        end
+    })
+end
+
+UpgradesTab:CreateSection("Steak Upgrades")
+
+local steakUpgradeStates = {}
+
+for i = 1, 4 do
+    local index = i
+    steakUpgradeStates[index] = false
+
+    UpgradesTab:CreateToggle({
+        Name = "Auto Steak Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            steakUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while steakUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "SteakUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+
+                            task.wait(0.3)
+                        end
+                    end
+                end)
+            end
+        end
+    })
+end
+
+UpgradesTab:CreateSection("Sausage Upgrades")
+
+local sausageUpgradeStates = {}
+
+for i = 1, 3 do
+    local index = i
+    sausageUpgradeStates[index] = false
+
+    UpgradesTab:CreateToggle({
+        Name = "Auto Sausage Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            sausageUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while sausageUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "SausageUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+
+                            task.wait(0.3)
+                        end
+                    end
+                end)
+            end
+        end
+    })
+end
+
+UpgradesTab:CreateSection("Wood Upgrades")
+
+local woodUpgradeStates = {}
+
+for i = 1, 4 do
+    local index = i
+    woodUpgradeStates[index] = false
+
+    UpgradesTab:CreateToggle({
+        Name = "Auto Wood Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            woodUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while woodUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "WoodUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+
+                            task.wait(0.3)
+                        end
+                    end
+                end)
+            end
+        end
+    })
+end
+
+UpgradesTab:CreateSection("Planks Upgrades")
+
+local planksUpgradeStates = {}
+
+for i = 1, 3 do
+    local index = i
+    planksUpgradeStates[index] = false
+
+    UpgradesTab:CreateToggle({
+        Name = "Auto Planks Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            planksUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while planksUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "PlanksUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+
+                            task.wait(0.3)
+                        end
+                    end
+                end)
+            end
+        end
+    })
+end
+
+UpgradesTab:CreateSection("Paper Upgrades")
+
+local paperUpgradeStates = {}
+
+for i = 1, 3 do
+    local index = i
+    paperUpgradeStates[index] = false
+
+    UpgradesTab:CreateToggle({
+        Name = "Auto Paper Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            paperUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while paperUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "PaperUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+
+                            task.wait(0.3)
+                        end
+                    end
+                end)
+            end
+        end
+    })
+end
+
+UpgradesTab:CreateSection("Coins Upgrades")
+
+local coinsUpgradeStates = {}
+
+for i = 1, 4 do
+    local index = i
+    coinsUpgradeStates[index] = false
+
+    UpgradesTab:CreateToggle({
+        Name = "Auto Coins Upgrade " .. index,
+        CurrentValue = false,
+        Callback = function(Value)
+            coinsUpgradeStates[index] = Value
+
+            if Value then
+                task.spawn(function()
+                    while coinsUpgradeStates[index] do
+                        if Upgrades then
+                            pcall(function()
+                                Upgrades:FireServer(
+                                    "CoinsUpgrade" .. index,
+                                    "Max"
+                                )
+                            end)
+
+                            task.wait(0.3)
+                        end
+                    end
+                end)
+            end
+        end
+    })
+end
+
+Rayfield:Notify({
+    Title = "Incremental hub,
+    Content = "Loaded successfully!",
+    Duration = 3
+})
