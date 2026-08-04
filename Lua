@@ -1147,7 +1147,7 @@ for i = 1, 4 do
 end
 
 Rayfield:Notify({
-    Title = "Incremental hub,
+    Title = "Incremental hub",
     Content = "Loaded successfully!",
     Duration = 3
 })
